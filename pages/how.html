@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How It Works | Digital Mirror</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+    .container {
+      width: 85%;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    nav {
+      background-color: #111;
+      padding: 10px 20px;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      margin: 0;
+      padding: 0;
+    }
+    nav ul li a {
+      text-decoration: none;
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+    nav ul li a:hover,
+    nav ul li a.active {
+      background-color: #4CAF50;
+      color: #fff;
+    }
+    h1 { margin-bottom: 20px; }
+    .card {
+      background: #1e1e1e;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+    button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    input, select {
+      padding: 8px;
+      width: 100%;
+      margin: 8px 0;
+      border: none;
+      border-radius: 4px;
+    }
+    #simulation-result {
+      background: #2a2a2a;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="profile.html">Profile Setup</a></li>
+      <li><a href="score.html">Privacy Score</a></li>
+      <li><a href="report.html">Report</a></li>
+      <li><a href="how.html" class="active">How It Works</a></li>
+      <li><a href="tips.html">Privacy Tips</a></li>
+      <li><a href="settings.html">Settings</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    <h1>How It Works</h1>
+
+    <!-- Interactive Explanation -->
+    <div class="card">
+      <h3>Ask About Privacy Detection</h3>
+      <input type="text" id="user-question" placeholder="Type your question (e.g., How do you check cookies?)">
+      <button onclick="answerQuestion()">Ask</button>
+      <p id="answer-output"></p>
+    </div>
+
+    <!-- Step Selection -->
+    <div class="card">
+      <h3>Learn Each Step</h3>
+      <select id="step-selector" onchange="showStepDetails()">
+        <option value="">-- Select a Step --</option>
+        <option value="browser">Collecting browser details</option>
+        <option value="ip">Checking IP and location</option>
+        <option value="cookies">Analyzing cookies and trackers</option>
+        <option value="score">Calculating your privacy score</option>
+      </select>
+      <p id="step-detail"></p>
+    </div>
+
+    <!-- Simulation -->
+    <div class="card">
+      <h3>Try Detection Simulation</h3>
+      <button onclick="simulateDetection()">Run Simulation</button>
+      <p id="simulation-result"></p>
+    </div>
+  </main>
+
+  <script>
+    function answerQuestion() {
+      const question = document.getElementById('user-question').value.toLowerCase();
+      let answer = "Sorry, I don't have an answer for that yet.";
+      if (question.includes('cookie')) {
+        answer = "We analyze browser cookies to detect tracking risks.";
+      } else if (question.includes('ip')) {
+        answer = "Your IP address is checked using a public API like ipify.";
+      } else if (question.includes('fingerprint')) {
+        answer = "We collect browser-specific attributes to create a fingerprint.";
+      }
+      document.getElementById('answer-output').innerText = answer;
+    }
+
+    function showStepDetails() {
+      const step = document.getElementById('step-selector').value;
+      let detail = "";
+      switch(step) {
+        case 'browser':
+          detail = "We collect details like User-Agent, screen size, and OS.";
+          break;
+        case 'ip':
+          detail = "Your IP is fetched using external services to determine your network origin.";
+          break;
+        case 'cookies':
+          detail = "Cookies and local storage data are analyzed for potential tracking.";
+          break;
+        case 'score':
+          detail = "We combine all detected risks into a privacy score.";
+          break;
+        default:
+          detail = "";
+      }
+      document.getElementById('step-detail').innerText = detail;
+    }
+
+    function simulateDetection() {
+      document.getElementById('simulation-result').innerText = 
+        "Simulating detection...\nBrowser: " + navigator.userAgent + 
+        "\nIP: Fetching...\nCookies Enabled: " + navigator.cookieEnabled;
+    }
+  </script>
+</body>
+</html>

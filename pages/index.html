@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Digital Mirror</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: url('logo.jpg') no-repeat center center/cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #fff;
+    }
+
+    .login-wrapper {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .login-wrapper h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .login-wrapper p {
+      font-size: 14px;
+      margin-bottom: 20px;
+      color: #ccc;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      background: #333;
+      padding: 8px;
+      border-radius: 5px;
+    }
+
+    .input-group i {
+      margin-right: 10px;
+      color: #999;
+    }
+
+    .input-group input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: transparent;
+      color: #fff;
+      outline: none;
+    }
+
+    .login-options {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+
+    .login-options a {
+      color: #4CAF50;
+      text-decoration: none;
+    }
+
+    .login-options a:hover {
+      text-decoration: underline;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      background: linear-gradient(90deg, #4CAF50, #3e8e41);
+      color: #fff;
+      transition: background 0.3s ease;
+    }
+
+    .login-btn:hover {
+      background: linear-gradient(90deg, #45a049, #2e7d32);
+    }
+
+    .divider {
+      margin: 20px 0;
+      text-align: center;
+      position: relative;
+    }
+
+    .divider span {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 0 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .divider:before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: #444;
+      z-index: 0;
+    }
+
+    .google-btn {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #DB4437;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease;
+    }
+
+    .google-btn i {
+      margin-right: 8px;
+    }
+
+    .google-btn:hover {
+      background: #c23321;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-wrapper">
+    <h1>Welcome Back!</h1>
+    <p>Sign in to access your privacy dashboard</p>
+
+    <form id="login-form" onsubmit="return handleLogin()">
+      <div class="input-group">
+        <i class="fas fa-user"></i>
+        <input type="text" id="username" placeholder="Username" required>
+      </div>
+      <div class="input-group">
+        <i class="fas fa-lock"></i>
+        <input type="password" id="password" placeholder="Password" required>
+      </div>
+      
+      <div class="login-options">
+        <label><input type="checkbox" id="remember"> Remember me</label>
+        <a href="#" class="forgot-link">Forgot Password?</a>
+      </div>
+      
+      <button type="submit" class="login-btn">Login</button>
+      <p id="login-message"></p>
+    </form>
+
+    <div class="divider"><span>or</span></div>
+
+    <button class="google-btn">
+      <i class="fab fa-google"></i> Sign in with Google
+    </button>
+  </div>
+
+  <script>
+  function handleLogin() {
+    // Optional: Add basic validation
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    if (username && password) {
+      // Redirect to profile.html after login
+      window.location.href = "profile.html";
+    } else {
+      document.getElementById('login-message').innerText = "Please enter username and password.";
+    }
+    return false; // Prevent default form submission
+  }
+</script>
+
+</body>
+</html>

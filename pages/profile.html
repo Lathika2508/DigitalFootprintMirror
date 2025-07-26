@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Setup | Digital Fingerprint Mirror</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="logo">
+      <img src="logo.jpg" alt="Logo">
+      <span>Digital Mirror</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="profile.html" class="active">Profile Setup</a></li>
+      <li><a href="score.html">Privacy Score</a></li>
+      <li><a href="report.html">Report</a></li>
+      <li><a href="how.html">How It Works</a></li>
+      <li><a href="tips.html">Privacy Tips</a></li>
+      <li><a href="settings.html">Settings</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Welcome to Your Privacy Dashboard</h1>
+      <p>Secure your digital footprint by setting up your profile and generating your privacy score.</p>
+      <button onclick="window.location.href='login.html'">Get Started</button>
+    </div>
+    <div class="hero-image">
+      <img src="privacypic.jpg" alt="Privacy Illustration">
+    </div>
+  </section>
+
+  <!-- Profile Setup Form -->
+  <main class="container">
+    <h2>Profile Setup</h2>
+    <form id="profile-form" class="profile-form">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" placeholder="Enter your full name">
+
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="Enter your email">
+
+      <label>Privacy Preferences</label>
+      <div class="checkbox-group">
+        <label><input type="checkbox" id="cookies"> Block Cookies</label>
+        <label><input type="checkbox" id="trackers"> Block Trackers</label>
+        <label><input type="checkbox" id="vpn"> Use VPN</label>
+      </div>
+
+      <button type="button" onclick="saveProfile()">Save</button>
+    </form>
+
+    <!-- Preview Card -->
+    <div class="card preview-card">
+      <h3>Profile Preview</h3>
+      <p id="preview-name">Name: </p>
+      <p id="preview-email">Email: </p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 Digital Fingerprint Mirror | All Rights Reserved.</p>
+  </footer>
+
+  <script src="../script.js"></script>
+</body>
+</html>

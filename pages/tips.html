@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Tips | Digital Mirror</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+    h1 { margin-bottom: 10px; }
+    .container {
+      width: 85%;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    nav {
+      background-color: #111;
+      padding: 10px 20px;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      margin: 0;
+      padding: 0;
+    }
+    nav ul li a {
+      text-decoration: none;
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+    nav ul li a:hover,
+    nav ul li a.active {
+      background-color: #4CAF50;
+      color: #fff;
+    }
+    .card.tip {
+      background: #1e1e1e;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+    .card.tip h3 { margin: 0 0 5px; }
+    #search-tips {
+      padding: 8px;
+      width: 100%;
+      border-radius: 4px;
+      border: none;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="profile.html">Profile Setup</a></li>
+      <li><a href="score.html">Privacy Score</a></li>
+      <li><a href="report.html">Report</a></li>
+      <li><a href="how.html">How It Works</a></li>
+      <li><a href="tips.html" class="active">Privacy Tips</a></li>
+      <li><a href="settings.html">Settings</a></li>
+    </ul>
+  </nav>
+  
+  <main class="container">
+    <h1>Privacy Tips</h1>
+    <input type="text" id="search-tips" placeholder="Search tips" onkeyup="filterTips()">
+    <div id="tips-list"></div>
+  </main>
+
+  <script>
+    const allTips = {
+      cookies: [
+        { title: "Disable Third-Party Cookies", text: "Prevent tracking across websites by blocking third-party cookies." },
+        { title: "Clear Cookies Regularly", text: "Remove stored cookies frequently to minimize tracking." }
+      ],
+      tracking: [
+        { title: "Use Browser Extensions", text: "Install privacy-focused extensions like uBlock Origin or Privacy Badger." },
+        { title: "Limit Website Permissions", text: "Disable unnecessary permissions like location or microphone." }
+      ],
+      canvas: [
+        { title: "Use Anti-Fingerprinting Browsers", text: "Browsers like Tor or Brave can reduce canvas fingerprinting risks." }
+      ],
+      webgl: [
+        { title: "Disable WebGL", text: "Turn off WebGL in your browser if you don't need 3D content." }
+      ],
+      audio: [
+        { title: "Block Audio Context Fingerprinting", text: "Use browser plugins to limit audio fingerprinting techniques." }
+      ],
+      general: [
+        { title: "Use a VPN", text: "VPN hides your IP address and secures your online activities." },
+        { title: "Enable Do Not Track", text: "Turn on Do Not Track in browser settings for extra privacy." }
+      ]
+    };
+
+    function loadTips() {
+      const scores = JSON.parse(localStorage.getItem("privacyScores")) || {};
+      const tipsContainer = document.getElementById("tips-list");
+      tipsContainer.innerHTML = "";
+
+      // Display targeted tips based on risk
+      for (let category in allTips) {
+        if (scores[category] && scores[category] >= 50) {
+          allTips[category].forEach(tip => {
+            tipsContainer.innerHTML += `
+              <div class="card tip">
+                <h3>${tip.title}</h3>
+                <p>${tip.text}</p>
+              </div>
+            `;
+          });
+        }
+      }
+
+      // If no scores or all low risks, show general tips
+      if (!tipsContainer.innerHTML) {
+        allTips.general.forEach(tip => {
+          tipsContainer.innerHTML += `
+            <div class="card tip">
+              <h3>${tip.title}</h3>
+              <p>${tip.text}</p>
+            </div>
+          `;
+        });
+      }
+    }
+
+    function filterTips() {
+      const query = document.getElementById("search-tips").value.toLowerCase();
+      const tips = document.querySelectorAll(".tip");
+      tips.forEach(tip => {
+        tip.style.display = tip.innerText.toLowerCase().includes(query) ? "" : "none";
+      });
+    }
+
+    window.onload = loadTips;
+  </script>
+</body>
+</html>
