@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="PrivacyApp">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Privacy Tips | Digital Mirror</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -46,9 +47,20 @@
       margin: 10px 0;
       border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+      cursor: pointer;
     }
-    .card.tip h3 { margin: 0 0 5px; }
-    #search-tips {
+    .card.tip h3 {
+      margin: 0 0 5px;
+    }
+    .tip-details {
+      background-color: #2a2a2a;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 8px;
+      color: #cfcfcf;
+      font-size: 0.95em;
+    }
+    #search-tips, select {
       padding: 8px;
       width: 100%;
       border-radius: 4px;
@@ -57,7 +69,8 @@
     }
   </style>
 </head>
-<body>
+<body ng-controller="TipsController">
+
   <nav>
     <ul>
       <li><a href="profile.html">Profile Setup</a></li>
@@ -68,79 +81,187 @@
       <li><a href="settings.html">Settings</a></li>
     </ul>
   </nav>
-  
+
   <main class="container">
     <h1>Privacy Tips</h1>
-    <input type="text" id="search-tips" placeholder="Search tips" onkeyup="filterTips()">
-    <div id="tips-list"></div>
+
+    <input type="text" id="search-tips" ng-model="searchQuery" placeholder="Search tips">
+    <select ng-model="selectedCategory" ng-change="loadTipsByCategory()" ng-options="cat for cat in categories">
+      <option value="">-- Select Risk Category --</option>
+    </select>
+
+    <div id="tips-list">
+      <div class="card tip" ng-repeat="tip in filteredTips = (tips | filter:searchQuery)" ng-click="toggleDetails(tip)">
+        <h3>{{ tip.title }}</h3>
+        <p>{{ tip.text }}</p>
+        <div class="tip-details" ng-show="expandedTip === tip">
+          {{ tip.detail }}
+        </div>
+      </div>
+      <p ng-if="filteredTips.length === 0">No tips found.</p>
+    </div>
   </main>
 
   <script>
-    const allTips = {
-      cookies: [
-        { title: "Disable Third-Party Cookies", text: "Prevent tracking across websites by blocking third-party cookies." },
-        { title: "Clear Cookies Regularly", text: "Remove stored cookies frequently to minimize tracking." }
-      ],
-      tracking: [
-        { title: "Use Browser Extensions", text: "Install privacy-focused extensions like uBlock Origin or Privacy Badger." },
-        { title: "Limit Website Permissions", text: "Disable unnecessary permissions like location or microphone." }
-      ],
-      canvas: [
-        { title: "Use Anti-Fingerprinting Browsers", text: "Browsers like Tor or Brave can reduce canvas fingerprinting risks." }
-      ],
-      webgl: [
-        { title: "Disable WebGL", text: "Turn off WebGL in your browser if you don't need 3D content." }
-      ],
-      audio: [
-        { title: "Block Audio Context Fingerprinting", text: "Use browser plugins to limit audio fingerprinting techniques." }
-      ],
-      general: [
-        { title: "Use a VPN", text: "VPN hides your IP address and secures your online activities." },
-        { title: "Enable Do Not Track", text: "Turn on Do Not Track in browser settings for extra privacy." }
-      ]
-    };
+    angular.module('PrivacyApp', [])
+      .service('TipService', function () {
+        const allTips = {
+          cookies: [
+            {
+              title: "Disable Third-Party Cookies",
+              text: "Prevent tracking across websites by blocking third-party cookies.",
+              detail: "Third-party cookies are created by domains other than the one you are visiting. Disabling them prevents cross-site tracking and improves your privacy."
+            },
+            {
+              title: "Clear Cookies Regularly",
+              text: "Remove stored cookies frequently to minimize tracking.",
+              detail: "Cookies store information about your browsing sessions. Clearing them ensures that websites don’t retain long-term behavioral tracking on you."
+            },
+            {
+              title: "Use Private Browsing Mode",
+              text: "Use incognito/private mode to avoid saving cookies and session data.",
+              detail: "Private mode ensures that cookies and history aren't saved after your session, making it harder for advertisers to track your behavior."
+            },
+            {
+              title: "Set Cookie Expiration Short",
+              text: "Configure your browser to delete cookies after each session.",
+              detail: "Browsers like Firefox allow setting cookie expiration policies. This reduces persistent tracking and improves control."
+            }
+          ],
+          tracking: [
+            {
+              title: "Use Browser Extensions",
+              text: "Install privacy-focused extensions like uBlock Origin or Privacy Badger.",
+              detail: "Extensions like these block known tracking scripts, pixels, and ads, providing better privacy control as you browse."
+            },
+            {
+              title: "Limit Website Permissions",
+              text: "Disable unnecessary permissions like location or microphone.",
+              detail: "Browsers often ask for permissions. Only allow what's absolutely necessary, and deny access to devices or sensors you don't use."
+            },
+            {
+              title: "Block Third-Party Trackers",
+              text: "Enable enhanced tracking protection in your browser.",
+              detail: "Most modern browsers now include tracking protection. Activate it in settings to block known tracker domains."
+            },
+            {
+              title: "Avoid Tracking URLs",
+              text: "Use link cleaner tools to remove tracking parameters from URLs.",
+              detail: "Some URLs include tracking codes (like `utm_source`). Tools like ClearURLs or redirect blockers can strip these automatically."
+            }
+          ],
+          canvas: [
+            {
+              title: "Use Anti-Fingerprinting Browsers",
+              text: "Browsers like Tor or Brave can reduce canvas fingerprinting risks.",
+              detail: "Canvas fingerprinting uses rendering techniques to identify your device uniquely. Anti-fingerprinting browsers block or randomize these outputs."
+            },
+            {
+              title: "Disable JavaScript on Unknown Sites",
+              text: "Disable JS to reduce fingerprinting vectors like canvas.",
+              detail: "JavaScript is often required for fingerprinting. Blocking JS selectively reduces canvas fingerprinting exposure."
+            },
+            {
+              title: "Install Canvas Defender Extensions",
+              text: "Use browser add-ons that randomize canvas data.",
+              detail: "Extensions like CanvasBlocker help you spoof or block canvas fingerprinting, preserving privacy."
+            }
+          ],
+          webgl: [
+            {
+              title: "Disable WebGL",
+              text: "Turn off WebGL in your browser if you don't need 3D content.",
+              detail: "WebGL can be used for hardware fingerprinting. If you don’t use 3D web apps, consider disabling it for better privacy."
+            },
+            {
+              title: "Use WebGL Spoofing Tools",
+              text: "Spoof or block WebGL fingerprinting using browser plugins.",
+              detail: "Some extensions provide fake WebGL info or block it entirely, reducing fingerprinting accuracy."
+            },
+            {
+              title: "Use Software Rendering Mode",
+              text: "Switch to software-based rendering to avoid exposing GPU info.",
+              detail: "In browsers like Firefox, you can force software rendering, hiding GPU info from trackers."
+            }
+          ],
+          audio: [
+            {
+              title: "Block Audio Context Fingerprinting",
+              text: "Use browser plugins to limit audio fingerprinting techniques.",
+              detail: "Audio fingerprinting exploits your device’s audio stack to identify it uniquely. Some browsers and plugins now block such behavior."
+            },
+            {
+              title: "Mute Tabs by Default",
+              text: "Configure browser to mute audio on new tabs automatically.",
+              detail: "Blocking audio playback helps prevent certain types of unauthorized listening or fingerprinting."
+            },
+            {
+              title: "Use Script Blockers",
+              text: "Prevent audio scripts from running on unknown domains.",
+              detail: "NoScript and uMatrix can block unknown JavaScript, reducing access to the AudioContext API used in fingerprinting."
+            }
+          ],
+          general: [
+            {
+              title: "Use a VPN",
+              text: "VPN hides your IP address and secures your online activities.",
+              detail: "A VPN routes your internet traffic through an encrypted tunnel, shielding your identity and preventing ISPs from tracking you."
+            },
+            {
+              title: "Enable Do Not Track",
+              text: "Turn on Do Not Track in browser settings for extra privacy.",
+              detail: "While not all websites honor this request, enabling 'Do Not Track' sends a signal that you prefer not to be monitored."
+            },
+            {
+              title: "Use Secure Browsers",
+              text: "Browsers like Brave and Firefox focus on user privacy.",
+              detail: "These browsers include default privacy protections, such as tracker blocking and script control."
+            },
+            {
+              title: "Minimize App Permissions",
+              text: "Review and restrict mobile app permissions regularly.",
+              detail: "Apps often request unnecessary permissions. Audit them in system settings and revoke what you don't trust."
+            }
+          ]
+        };
 
-    function loadTips() {
-      const scores = JSON.parse(localStorage.getItem("privacyScores")) || {};
-      const tipsContainer = document.getElementById("tips-list");
-      tipsContainer.innerHTML = "";
+        this.getTipsByScore = function () {
+          const scores = JSON.parse(localStorage.getItem("privacyScores")) || {};
+          const tips = [];
+          for (let cat in allTips) {
+            if (scores[cat] && scores[cat] >= 50) {
+              tips.push(...allTips[cat]);
+            }
+          }
+          return tips.length > 0 ? tips : allTips.general;
+        };
 
-      // Display targeted tips based on risk
-      for (let category in allTips) {
-        if (scores[category] && scores[category] >= 50) {
-          allTips[category].forEach(tip => {
-            tipsContainer.innerHTML += `
-              <div class="card tip">
-                <h3>${tip.title}</h3>
-                <p>${tip.text}</p>
-              </div>
-            `;
-          });
-        }
-      }
+        this.getTipsByCategory = function (category) {
+          return allTips[category] || allTips.general;
+        };
 
-      // If no scores or all low risks, show general tips
-      if (!tipsContainer.innerHTML) {
-        allTips.general.forEach(tip => {
-          tipsContainer.innerHTML += `
-            <div class="card tip">
-              <h3>${tip.title}</h3>
-              <p>${tip.text}</p>
-            </div>
-          `;
-        });
-      }
-    }
+        this.getCategories = function () {
+          return Object.keys(allTips);
+        };
+      })
 
-    function filterTips() {
-      const query = document.getElementById("search-tips").value.toLowerCase();
-      const tips = document.querySelectorAll(".tip");
-      tips.forEach(tip => {
-        tip.style.display = tip.innerText.toLowerCase().includes(query) ? "" : "none";
+      .controller('TipsController', function ($scope, TipService) {
+        $scope.searchQuery = "";
+        $scope.tips = TipService.getTipsByScore();
+        $scope.categories = TipService.getCategories();
+        $scope.expandedTip = null;
+
+        $scope.loadTipsByCategory = function () {
+          $scope.tips = $scope.selectedCategory
+            ? TipService.getTipsByCategory($scope.selectedCategory)
+            : TipService.getTipsByScore();
+          $scope.expandedTip = null;
+        };
+
+        $scope.toggleDetails = function (tip) {
+          $scope.expandedTip = ($scope.expandedTip === tip) ? null : tip;
+        };
       });
-    }
-
-    window.onload = loadTips;
   </script>
 </body>
 </html>
