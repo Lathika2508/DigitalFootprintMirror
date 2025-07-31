@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="reportApp">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Privacy Report | Digital Mirror</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -98,7 +99,7 @@
     }
   </style>
 </head>
-<body>
+<body ng-controller="ReportController">
   <!-- Navbar -->
   <nav class="navbar">
     <div class="logo">
@@ -126,22 +127,22 @@
 
     <!-- Risk Analysis -->
     <div class="card">
-      <h2>Total Privacy Score: <span id="total-score">Loading...</span></h2>
-      <p id="overall-analysis">Generating overall analysis...</p>
+      <h2>Total Privacy Score: <span>{{ scores.total }}%</span></h2>
+      <p>{{ overallMessage }}</p>
     </div>
 
     <div class="card">
       <h3>Detailed Risk Analysis</h3>
       <ul>
-        <li>Cookies Risk: <span id="cookies-risk">Loading...</span></li>
-        <li>Tracking Exposure: <span id="tracking-risk">Loading...</span></li>
-        <li>Canvas Fingerprint: <span id="canvas-risk">Loading...</span></li>
-        <li>WebGL Vendor: <span id="webgl-risk">Loading...</span></li>
-        <li>Audio Fingerprint: <span id="audio-risk">Loading...</span></li>
+        <li>Cookies Risk: <span ng-class="getRiskClass(scores.cookies)">{{ scores.cookies }}% ({{ getRiskLevel(scores.cookies) }})</span></li>
+        <li>Tracking Exposure: <span ng-class="getRiskClass(scores.tracking)">{{ scores.tracking }}% ({{ getRiskLevel(scores.tracking) }})</span></li>
+        <li>Canvas Fingerprint: <span ng-class="getRiskClass(scores.canvas)">{{ scores.canvas }}% ({{ getRiskLevel(scores.canvas) }})</span></li>
+        <li>WebGL Vendor: <span ng-class="getRiskClass(scores.webgl)">{{ scores.webgl }}% ({{ getRiskLevel(scores.webgl) }})</span></li>
+        <li>Audio Fingerprint: <span ng-class="getRiskClass(scores.audio)">{{ scores.audio }}% ({{ getRiskLevel(scores.audio) }})</span></li>
       </ul>
     </div>
 
-    <button class="pdf-btn" onclick="downloadPDF()">Download PDF Report</button>
+    <button class="pdf-btn" ng-click="downloadPDF()">Download PDF Report</button>
   </main>
 
   <footer>
@@ -149,85 +150,76 @@
   </footer>
 
   <script>
-    function getRiskLevel(score) {
-      if (score < 40) return "low";
-      if (score < 70) return "medium";
-      return "high";
-    }
+    angular.module('reportApp', [])
+      .controller('ReportController', ['$scope', function($scope) {
+        $scope.scores = JSON.parse(localStorage.getItem("privacyScores")) || {
+          cookies: 0,
+          tracking: 0,
+          canvas: 0,
+          webgl: 0,
+          audio: 0,
+          total: 0
+        };
 
-    function loadReport() {
-      const scores = JSON.parse(localStorage.getItem("privacyScores")) || {
-        cookies: 0,
-        tracking: 0,
-        canvas: 0,
-        webgl: 0,
-        audio: 0,
-        total: 0
-      };
+        $scope.getRiskLevel = function(score) {
+          if (score < 40) return "low";
+          if (score < 70) return "medium";
+          return "high";
+        };
 
-      // Update text values
-      document.getElementById('cookies-risk').innerText = scores.cookies + "% (" + getRiskLevel(scores.cookies) + ")";
-      document.getElementById('tracking-risk').innerText = scores.tracking + "% (" + getRiskLevel(scores.tracking) + ")";
-      document.getElementById('canvas-risk').innerText = scores.canvas + "% (" + getRiskLevel(scores.canvas) + ")";
-      document.getElementById('webgl-risk').innerText = scores.webgl + "% (" + getRiskLevel(scores.webgl) + ")";
-      document.getElementById('audio-risk').innerText = scores.audio + "% (" + getRiskLevel(scores.audio) + ")";
-      document.getElementById('total-score').innerText = scores.total + "%";
+        $scope.getRiskClass = function(score) {
+          return $scope.getRiskLevel(score);
+        };
 
-      document.getElementById('overall-analysis').innerText =
-        scores.total < 40 ? "Your overall privacy risk is low. Keep your privacy settings as they are." :
-        scores.total < 70 ? "Your privacy risk is moderate. Consider improving your security measures." :
-        "Your privacy risk is high. Immediate steps are recommended to enhance your privacy.";
+        $scope.overallMessage =
+          $scope.scores.total < 40 ? "Your overall privacy risk is low. Keep your privacy settings as they are." :
+          $scope.scores.total < 70 ? "Your privacy risk is moderate. Consider improving your security measures." :
+          "Your privacy risk is high. Immediate steps are recommended to enhance your privacy.";
 
-      // Radar chart
-      const ctx = document.getElementById('privacyChart').getContext('2d');
-      new Chart(ctx, {
-        type: 'radar',
-        data: {
-          labels: ['Cookies', 'Tracking', 'Canvas', 'WebGL', 'Audio'],
-          datasets: [{
-            label: 'Privacy Risks (%)',
-            data: [scores.cookies, scores.tracking, scores.canvas, scores.webgl, scores.audio],
-            backgroundColor: 'rgba(244, 67, 54, 0.3)',
-            borderColor: '#F44336',
-            borderWidth: 2,
-            pointBackgroundColor: '#F44336'
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            r: {
-              angleLines: { color: '#333' },
-              grid: { color: '#555' },
-              pointLabels: { color: '#e0e0e0' },
-              suggestedMin: 0,
-              suggestedMax: 100
-            }
+        const ctx = document.getElementById('privacyChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'radar',
+          data: {
+            labels: ['Cookies', 'Tracking', 'Canvas', 'WebGL', 'Audio'],
+            datasets: [{
+              label: 'Privacy Risks (%)',
+              data: [$scope.scores.cookies, $scope.scores.tracking, $scope.scores.canvas, $scope.scores.webgl, $scope.scores.audio],
+              backgroundColor: 'rgba(244, 67, 54, 0.3)',
+              borderColor: '#F44336',
+              borderWidth: 2,
+              pointBackgroundColor: '#F44336'
+            }]
           },
-          plugins: {
-            legend: { labels: { color: '#e0e0e0' } }
+          options: {
+            responsive: true,
+            scales: {
+              r: {
+                angleLines: { color: '#333' },
+                grid: { color: '#555' },
+                pointLabels: { color: '#e0e0e0' },
+                suggestedMin: 0,
+                suggestedMax: 100
+              }
+            },
+            plugins: {
+              legend: { labels: { color: '#e0e0e0' } }
+            }
           }
+        });
+
+        $scope.downloadPDF = async function() {
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF('p', 'mm', 'a4');
+          const reportElement = document.getElementById('report-section');
+          const canvas = await html2canvas(reportElement, { backgroundColor: '#121212', scale: 2 });
+          const imgData = canvas.toDataURL('image/png');
+          const imgWidth = 190;
+          const pageHeight = 295;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+          pdf.save('Privacy_Report.pdf');
         }
-      });
-    }
-
-    async function downloadPDF() {
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const reportElement = document.getElementById('report-section');
-
-      // Use html2canvas to convert the report section into an image
-      const canvas = await html2canvas(reportElement, { backgroundColor: '#121212', scale: 2 });
-      const imgData = canvas.toDataURL('image/png');
-      const imgWidth = 190;
-      const pageHeight = 295;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-      pdf.save('Privacy_Report.pdf');
-    }
-
-    window.onload = loadReport;
+      }]);
   </script>
 </body>
 </html>
